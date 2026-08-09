@@ -13,7 +13,7 @@ app.use(cors({
     origin: [
         'http://127.0.0.1:5500',
         'http://localhost:5500',
-        'https://bookmytest.com.np'
+        'https://bookmytestnepal.com.np'
     ]
 }));
 app.use(express.json());

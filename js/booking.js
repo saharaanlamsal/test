@@ -1,5 +1,5 @@
 // BookMyTest — booking form + cart logic
-const API_BASE = window.BOOKMYTEST_API_BASE || 'http://localhost:4000';
+const API_BASE = '';
 
 let examFees = {};
 let cart = [];
