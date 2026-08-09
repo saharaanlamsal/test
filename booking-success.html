@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Confirmed — BookMyTest</title>
+<link rel="icon" href="images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/booking.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="BookMyTest logo">
+      <span class="brand-text">Book<span>My</span>Test</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="exams.html">Exams</a>
+      <a href="booking.html">Book Now</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-cta">
+      <a href="tel:+9779816475000" class="btn btn-outline">Call Us</a>
+      <a href="booking.html" class="btn btn-primary">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-nav">
+  <a href="index.html">Home</a>
+  <a href="exams.html">Exams</a>
+  <a href="booking.html">Book Now</a>
+  <a href="contact.html">Contact</a>
+</div>
+<button class="nav-close" aria-label="Close menu">&times;</button>
+
+<section class="status-page">
+  <div class="status-card">
+    <div class="status-icon success">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+    </div>
+    <h1>Payment Received!</h1>
+    <p>Your booking request has been submitted and your reservation fee is confirmed.</p>
+
+    <div class="status-detail" id="bookingDetail">
+      <div><span>Loading your order details…</span></div>
+    </div>
+
+    <p style="font-size:0.85rem;">Our team will confirm your exact test date and center with the official provider, and reach out by phone/WhatsApp shortly. A confirmation email is on its way to you too.</p>
+
+    <div class="status-actions">
+      <a href="index.html" class="btn btn-dark">Back to Home</a>
+      <a href="https://wa.me/9779816475000" target="_blank" rel="noopener" class="btn btn-primary">Message Us on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<script>window.BOOKMYTEST_API_BASE = 'http://localhost:4000';</script>
+<script src="js/main.js"></script>
+<script>
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    const box = document.getElementById('bookingDetail');
+    if (!ref) { box.innerHTML = '<div><span>No order reference found in the link.</span></div>'; return; }
+    try {
+      const res = await fetch(`${window.BOOKMYTEST_API_BASE}/api/orders/${ref}`);
+      if (!res.ok) throw new Error();
+      const order = await res.json();
+      const itemRows = order.items.map(item => `
+        <div><span>${item.exam}</span><span>${item.preferred_date} · ${item.preferred_slot}</span></div>
+      `).join('');
+      box.innerHTML = `
+        ${itemRows}
+        <div><span>Total Paid</span><span>NPR ${order.total_amount}</span></div>
+        <div><span>Reference</span><span>${order.transaction_uuid.slice(0,8)}…</span></div>
+      `;
+    } catch {
+      box.innerHTML = '<div><span>Could not load order details, but your payment was recorded.</span></div>';
+    }
+  })();
+</script>
+</body>
+</html>
