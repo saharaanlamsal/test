@@ -10,8 +10,8 @@ const { EXAM_RESERVATION_FEE, TIME_SLOTS } = require('./config');
 
 const app = express();
 
-// Serve the static frontend from the parent folder when the backend is deployed
-app.use(express.static(path.join(__dirname, '..')));
+// Serve the static frontend from the new frontend folder when the backend is deployed
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 app.use(cors({
     origin: [
@@ -38,6 +38,11 @@ app.get('/api/orders/:uuid', (req, res) => {
 
 app.use('/api/orders', ordersRouter);
 app.use('/api/esewa', esewaRouter);
+
+// Ensure the backend root route serves the frontend homepage after the move.
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+});
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
