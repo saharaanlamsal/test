@@ -44,7 +44,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`BookMyTest backend running on port ${PORT} (eSewa mode: ${process.env.ESEWA_MODE || 'test'})`);
+const PORT = process.env.PORT || 4001;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`BookMyTest backend running on port ${PORT}`);
 });
