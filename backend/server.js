@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 
@@ -8,6 +9,9 @@ const esewaRouter = require('./routes/esewa');
 const { EXAM_RESERVATION_FEE, TIME_SLOTS } = require('./config');
 
 const app = express();
+
+// Serve the static frontend from the parent folder when the backend is deployed
+app.use(express.static(path.join(__dirname, '..')));
 
 app.use(cors({
     origin: [
