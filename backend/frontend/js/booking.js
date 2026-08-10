@@ -1,5 +1,7 @@
 // BookMyTest — booking form + cart logic
-const API_BASE = window.BOOKMYTEST_API_BASE || '';
+const API_BASE =
+    window.BOOKMYTEST_API_BASE ||
+    (window.location.port === '5500' ? 'http://localhost:4001' : '');
 
 let examFees = {};
 let cart = [];
