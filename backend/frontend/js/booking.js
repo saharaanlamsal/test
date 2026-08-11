@@ -1,10 +1,9 @@
-// BookMyTest — booking form + cart logic
+// BookMyTest — single-test booking + payment logic
 const API_BASE =
     window.BOOKMYTEST_API_BASE ||
     (window.location.port === '5500' ? 'http://localhost:4001' : '');
 
 let examFees = {};
-let cart = [];
 let paymentMethods = {};
 let bankDetails = {};
 let fonepayDetails = {};
@@ -24,14 +23,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!form) return;
 
   const examSelect = document.getElementById('exam');
+  const dateInput = document.getElementById('preferred_date');
   const slotSelect = document.getElementById('slot');
+  const cityInput = document.getElementById('test_center_city');
   const errorBox = document.getElementById('formError');
   const submitBtn = document.getElementById('payBtn');
-  const addBtn = document.getElementById('addToCartBtn');
-  const cartList = document.getElementById('cartList');
-  const cartEmpty = document.getElementById('cartEmpty');
+  const summaryEmpty = document.getElementById('summaryEmpty');
+  const summaryDetails = document.getElementById('summaryDetails');
+  const summaryExam = document.getElementById('summaryExam');
+  const summaryMeta = document.getElementById('summaryMeta');
+  const summaryPrice = document.getElementById('summaryPrice');
   const sumAmount = document.getElementById('sumAmount');
-  const cartCountBadge = document.getElementById('cartCount');
   const paymentMethodsBox = document.getElementById('paymentMethods');
   const manualNoteBox = document.getElementById('manualPaymentNote');
 
@@ -54,7 +56,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderPaymentMethods();
   } catch (e) {
     showError('Could not reach the booking server. Please try again shortly, or book via WhatsApp instead.');
-    addBtn.disabled = true;
     submitBtn.disabled = true;
   }
 
@@ -135,82 +136,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     errorBox.classList.remove('show');
   }
 
-  function renderCart() {
-    if (cart.length === 0) {
-      cartList.innerHTML = '';
-      cartEmpty.style.display = 'block';
-      submitBtn.disabled = true;
-    } else {
-      cartEmpty.style.display = 'none';
-      cartList.innerHTML = cart.map((item, idx) => `
-        <div class="cart-item">
-          <div class="cart-item-info">
-            <strong>${item.exam}</strong>
-            <span>${item.preferred_date} · ${item.preferred_slot}${item.test_center_city ? ' · ' + item.test_center_city : ''}</span>
-          </div>
-          <div class="cart-item-right">
-            <span class="cart-item-price">NPR ${item.amount.toLocaleString()}</span>
-            <button type="button" class="cart-remove" data-idx="${idx}" aria-label="Remove">&times;</button>
-          </div>
-        </div>
-      `).join('');
-      submitBtn.disabled = false;
-    }
-
-    const total = cart.reduce((sum, item) => sum + item.amount, 0);
-    sumAmount.textContent = total.toLocaleString();
-    if (cartCountBadge) {
-      cartCountBadge.textContent = cart.length;
-      cartCountBadge.style.display = cart.length ? 'inline-flex' : 'none';
-    }
-
-    cartList.querySelectorAll('.cart-remove').forEach(btn => {
-      btn.addEventListener('click', () => {
-        cart.splice(Number(btn.dataset.idx), 1);
-        renderCart();
-      });
-    });
-  }
-
-  addBtn.addEventListener('click', () => {
-    clearError();
+  // Renders the single-test order summary as the person fills in the form,
+  // and enables the pay button once exam, date, and slot are all chosen.
+  function updateSummary() {
     const exam = examSelect.value;
-    const date = document.getElementById('preferred_date').value;
+    const date = dateInput.value;
     const slot = slotSelect.value;
-    const city = document.getElementById('test_center_city').value.trim();
-    const notes = document.getElementById('notes').value.trim();
+    const city = cityInput.value.trim();
+    const amount = examFees[exam] || 0;
 
-    if (!exam || !date || !slot) {
-      showError('Please select an test, date, and time slot before adding to cart.');
+    if (!exam) {
+      summaryEmpty.style.display = 'block';
+      summaryDetails.style.display = 'none';
+      submitBtn.disabled = true;
+      sumAmount.textContent = '0';
       return;
     }
 
-    cart.push({
-      exam,
-      preferred_date: date,
-      preferred_slot: slot,
-      test_center_city: city,
-      notes,
-      amount: examFees[exam],
-    });
-    renderCart();
+    summaryEmpty.style.display = 'none';
+    summaryDetails.style.display = 'block';
+    summaryExam.textContent = exam;
+    summaryMeta.textContent = [date, slot, city].filter(Boolean).join(' · ') || 'Date & slot not set yet';
+    summaryPrice.textContent = `NPR ${amount.toLocaleString()}`;
+    sumAmount.textContent = amount.toLocaleString();
 
-    // Reset the "add item" mini-form so the person can add another exam cleanly.
-    examSelect.value = '';
-    document.getElementById('preferred_date').value = '';
-    slotSelect.value = '';
-    document.getElementById('test_center_city').value = '';
-    document.getElementById('notes').value = '';
+    submitBtn.disabled = !(exam && date && slot);
+  }
+
+  [examSelect, dateInput, slotSelect, cityInput].forEach(el => {
+    el.addEventListener('change', updateSummary);
+    el.addEventListener('input', updateSummary);
   });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     clearError();
 
-    if (cart.length === 0) {
-      showError('Your cart is empty — add at least one exam before checking out.');
+    const exam = examSelect.value;
+    const date = dateInput.value;
+    const slot = slotSelect.value;
+    const city = cityInput.value.trim();
+    const notes = document.getElementById('notes').value.trim();
+
+    if (!exam || !date || !slot) {
+      showError('Please select a test, date, and time slot before continuing to payment.');
       return;
     }
+
+    const item = {
+      exam,
+      preferred_date: date,
+      preferred_slot: slot,
+      test_center_city: city,
+      notes,
+      amount: examFees[exam],
+    };
 
     const contact = {
       full_name: document.getElementById('full_name').value.trim(),
@@ -231,7 +211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...contact, items: cart, payment_method: selectedPaymentMethod }),
+        body: JSON.stringify({ ...contact, items: [item], payment_method: selectedPaymentMethod }),
       });
       const data = await res.json();
 
@@ -271,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  renderCart();
+  updateSummary();
 
   // Prefill exam from ?exam=... query param (used by exam card links)
   const params = new URLSearchParams(window.location.search);
@@ -280,6 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(() => {
       if ([...examSelect.options].some(o => o.value === preselect)) {
         examSelect.value = preselect;
+        updateSummary();
       }
     }, 300);
   }

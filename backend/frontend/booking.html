@@ -57,14 +57,14 @@
     <div class="booking-layout">
       <div class="booking-form-card">
         <span class="step-badge">Step 1 of 2</span>
-        <h3>Add Tests to Your Cart</h3>
-        <p class="sub">Add as many tests as you need — you'll pay for everything in one checkout.</p>
+        <h3>Select Your Test</h3>
+        <p class="sub">Choose the test you'd like to book and pay for now. Need another test too? You can book it separately afterwards.</p>
 
         <div class="form-error" id="formError"></div>
 
         <form id="bookingForm">
           <div class="add-item-card">
-            <h4>Add an Test</h4>
+            <h4>Test Details</h4>
             <div class="form-row">
               <div class="form-group">
                 <label for="exam">Test</label>
@@ -93,7 +93,6 @@
               <label for="notes">Notes (optional)</label>
               <textarea id="notes" placeholder="Anything else we should know about this exam?"></textarea>
             </div>
-            <button type="button" class="btn btn-add-cart" id="addToCartBtn">+ Add to Cart</button>
           </div>
 
           <span class="step-badge">Step 2 of 2</span>
@@ -128,17 +127,27 @@
       </div>
 
       <div class="summary-card">
-        <h4>Your Cart <span class="cart-count-badge" id="cartCount" style="display:none;">0</span></h4>
+        <h4>Order Summary</h4>
 
-        <div class="cart-empty" id="cartEmpty">No tests added yet. Fill in the form and tap "Add to Cart."</div>
-        <div id="cartList"></div>
+        <div class="cart-empty" id="summaryEmpty">Select a test above to see your reservation fee.</div>
+        <div id="summaryDetails" style="display:none;">
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <strong id="summaryExam"></strong>
+              <span id="summaryMeta"></span>
+            </div>
+            <div class="cart-item-right">
+              <span class="cart-item-price" id="summaryPrice"></span>
+            </div>
+          </div>
+        </div>
 
         <div class="summary-total">
           <span>Total</span>
           <span class="amount">NPR <span id="sumAmount">0</span></span>
         </div>
         <div class="summary-note">
-          This secures your booking request(s) and is applied toward your total exam fee(s). Our team will confirm the exact official test date/center and remaining balance for each exam directly with you after payment.
+          This secures your booking request and is applied toward your total exam fee. Our team will confirm the exact official test date/center and remaining balance directly with you after payment.
         </div>
       </div>
     </div>
