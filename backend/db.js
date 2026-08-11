@@ -14,6 +14,7 @@ db.exec(`
     total_amount INTEGER NOT NULL,
     payment_status TEXT NOT NULL DEFAULT 'PENDING',
     booking_status TEXT NOT NULL DEFAULT 'AWAITING_PAYMENT',
+    payment_method TEXT NOT NULL DEFAULT 'esewa',
     esewa_ref_id TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -31,9 +32,18 @@ db.exec(`
   );
 `);
 
+// Migration for databases created before payment_method existed — ALTER TABLE
+// throws if the column is already there, so this is just a one-time no-op after
+// the first run.
+try {
+  db.exec(`ALTER TABLE orders ADD COLUMN payment_method TEXT NOT NULL DEFAULT 'esewa'`);
+} catch (e) {
+  if (!/duplicate column name/i.test(e.message)) throw e;
+}
+
 const insertOrderStmt = db.prepare(`
-  INSERT INTO orders (transaction_uuid, full_name, email, phone, total_amount)
-  VALUES (@transaction_uuid, @full_name, @email, @phone, @total_amount)
+  INSERT INTO orders (transaction_uuid, full_name, email, phone, total_amount, payment_method)
+  VALUES (@transaction_uuid, @full_name, @email, @phone, @total_amount, @payment_method)
 `);
 
 const insertItemStmt = db.prepare(`

@@ -48,7 +48,7 @@
     <div class="breadcrumb"><a href="index.html">Home</a> / <span>Book Now</span></div>
     <span class="eyebrow" style="justify-content:center;display:flex;">Online Booking</span>
     <h1>Book &amp; Pay Online</h1>
-    <p>Reserve your slot in minutes. Pay securely with eSewa — we'll confirm your exact test date and center directly with the provider.</p>
+    <p>Reserve your slot in minutes. Pay with eSewa, Khalti, FonePay, bank transfer, or cash on visit — we'll confirm your exact test date and center directly with the provider.</p>
   </div>
 </section>
 
@@ -116,8 +116,14 @@
             <input type="email" id="email" name="email" placeholder="you@example.com" required>
           </div>
 
-          <button type="submit" class="btn btn-primary esewa-btn" id="payBtn" disabled>Pay with eSewa &amp; Confirm Booking</button>
-          <p class="form-note">Sandbox/test payment mode is currently active — no real charge will occur until live eSewa credentials are added.</p>
+          <h3 style="margin-top:28px;">Payment Method</h3>
+          <p class="sub">Choose how you'd like to pay your reservation fee.</p>
+          <div class="payment-methods" id="paymentMethods"></div>
+
+          <div class="manual-payment-note" id="manualPaymentNote" style="display:none;"></div>
+
+          <button type="submit" class="btn btn-primary esewa-btn" id="payBtn" disabled>Pay &amp; Confirm Booking</button>
+          <p class="form-note">Sandbox/test payment mode is currently active for eSewa and Khalti — no real charge will occur until live credentials are added.</p>
         </form>
       </div>
 

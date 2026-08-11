@@ -85,6 +85,93 @@
   padding: 14px;
 }
 
+/* ==========================================================================
+   Payment method selector
+========================================================================== */
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.payment-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 14px;
+  border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.payment-option:hover { border-color: var(--blue); }
+.payment-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-100);
+  flex-shrink: 0;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  margin: 0;
+}
+.payment-option input[type="radio"]::before {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--blue);
+  transform: scale(0);
+  transition: transform 0.1s;
+}
+.payment-option input[type="radio"]:checked::before { transform: scale(1); }
+.payment-option input[type="radio"]:checked { border-color: var(--blue); }
+.payment-option.selected {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+.payment-option-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: var(--ink);
+}
+.payment-option-icon {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.payment-option-icon svg { width: 100%; height: 100%; }
+.payment-option[data-method="esewa"] .payment-option-label { color: #5FA615; }
+.payment-option[data-method="khalti"] .payment-option-label { color: #5C2D91; }
+.payment-option[data-method="fonepay"] .payment-option-label { color: #C8102E; }
+
+.manual-payment-note {
+  background: var(--paper);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.manual-payment-note strong { display: block; margin-bottom: 6px; font-family: var(--font-display); }
+.manual-payment-note .detail-row { display: flex; justify-content: space-between; padding: 3px 0; }
+.manual-payment-note .detail-row span:first-child { color: var(--gray-600); }
+.manual-payment-note .detail-row span:last-child { font-weight: 600; }
+
+@media (max-width: 640px) {
+  .payment-methods { grid-template-columns: repeat(2, 1fr); }
+}
+
 .esewa-btn {
   width: 100%;
   margin-top: 22px;

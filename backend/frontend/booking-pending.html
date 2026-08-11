@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Booking Received — BookMyTest</title>
+<link rel="icon" href="images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/booking.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <img src="images/logo.jpg" alt="BookMyTest logo">
+      <span class="brand-text">Book<span>My</span>Test</span>
+    </a>
+    <nav class="main-nav">
+      <a href="index.html">Home</a>
+      <a href="exams.html">Exams</a>
+      <a href="booking.html">Book Now</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="header-cta">
+      <a href="tel:+9779857035643" class="btn btn-outline">Call Us</a>
+      <a href="booking.html" class="btn btn-primary">Book Now</a>
+    </div>
+    <button class="nav-toggle" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mobile-nav">
+  <a href="index.html">Home</a>
+  <a href="exams.html">Exams</a>
+  <a href="booking.html">Book Now</a>
+  <a href="contact.html">Contact</a>
+</div>
+<button class="nav-close" aria-label="Close menu">&times;</button>
+
+<section class="status-page">
+  <div class="status-card">
+    <div class="status-icon success">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    </div>
+    <h1>Booking Received</h1>
+    <p>Your slot is reserved. We're just waiting to verify your payment.</p>
+
+    <div class="status-detail" id="bookingDetail">
+      <div><span>Loading your order details…</span></div>
+    </div>
+
+    <div class="manual-payment-note" id="methodInstructions" style="text-align:left;"></div>
+
+    <p style="font-size:0.85rem;">Once we verify your payment, we'll confirm your exact test date and center with the official provider and reach out on WhatsApp/phone. A copy of these details has also been emailed to you.</p>
+
+    <div class="status-actions">
+      <a href="index.html" class="btn btn-dark">Back to Home</a>
+      <a href="https://wa.me/9779857035643" target="_blank" rel="noopener" class="btn btn-primary" id="whatsappLink">Send Payment Proof on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+
+<script src="js/main.js"></script>
+<script>
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    const box = document.getElementById('bookingDetail');
+    const instructionsBox = document.getElementById('methodInstructions');
+    const whatsappLink = document.getElementById('whatsappLink');
+    if (!ref) { box.innerHTML = '<div><span>No order reference found in the link.</span></div>'; return; }
+
+    try {
+      const [orderRes, cfgRes] = await Promise.all([
+        fetch(`${window.BOOKMYTEST_API_BASE || ''}/api/orders/${ref}`),
+        fetch(`${window.BOOKMYTEST_API_BASE || ''}/api/config`),
+      ]);
+      if (!orderRes.ok) throw new Error();
+      const order = await orderRes.json();
+      const cfg = await cfgRes.json();
+
+      const itemRows = order.items.map(item => `
+        <div><span>${item.exam}</span><span>${item.preferred_date} · ${item.preferred_slot}</span></div>
+      `).join('');
+      box.innerHTML = `
+        ${itemRows}
+        <div><span>Total Due</span><span>NPR ${order.total_amount}</span></div>
+        <div><span>Reference</span><span>${order.transaction_uuid.slice(0, 8)}…</span></div>
+      `;
+
+      const shortRef = order.transaction_uuid.slice(0, 8);
+      const waMsg = encodeURIComponent(`Hi, I just booked (ref: ${shortRef}) and I'm sending my payment proof for NPR ${order.total_amount}.`);
+      whatsappLink.href = `https://wa.me/9779857035643?text=${waMsg}`;
+
+      if (order.payment_method === 'bank') {
+        const b = cfg.bankDetails || {};
+        instructionsBox.innerHTML = `
+          <strong>Bank Transfer Details</strong>
+          <div class="detail-row"><span>Bank</span><span>${b.bank_name || ''}</span></div>
+          <div class="detail-row"><span>Account Name</span><span>${b.account_name || ''}</span></div>
+          <div class="detail-row"><span>Account No.</span><span>${b.account_number || ''}</span></div>
+          <div class="detail-row"><span>Branch</span><span>${b.branch || ''}</span></div>
+          <p style="margin-top:8px;">Please mention reference <strong>${shortRef}</strong> and send us your transfer screenshot on WhatsApp.</p>
+        `;
+      } else if (order.payment_method === 'fonepay') {
+        const f = cfg.fonepayDetails || {};
+        instructionsBox.innerHTML = `
+          <strong>FonePay Details</strong>
+          <div class="detail-row"><span>Merchant</span><span>${f.merchant_name || ''}</span></div>
+          <div class="detail-row"><span>FonePay ID</span><span>${f.fonepay_id || ''}</span></div>
+          <p style="margin-top:8px;">${f.note || ''} Please mention reference <strong>${shortRef}</strong> and send us your screenshot on WhatsApp.</p>
+        `;
+      } else if (order.payment_method === 'cod') {
+        instructionsBox.innerHTML = `
+          <strong>Cash on Delivery / Pay at Office</strong>
+          <p>Please pay NPR ${order.total_amount} in cash when you visit our office in Manigram, Tilottama-5, Rupandehi, or when our team meets you. Mention reference <strong>${shortRef}</strong>.</p>
+        `;
+      }
+    } catch {
+      box.innerHTML = '<div><span>Could not load order details, but your booking was recorded.</span></div>';
+    }
+  })();
+</script>
+</body>
+</html>

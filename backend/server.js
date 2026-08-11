@@ -7,10 +7,14 @@ const cors = require('cors');
 const { getOrderByUuid } = require('./db');
 const ordersRouter = require('./routes/orders');
 const esewaRouter = require('./routes/esewa');
+const khaltiRouter = require('./routes/khalti');
 
 const {
     EXAM_RESERVATION_FEE,
-    TIME_SLOTS
+    TIME_SLOTS,
+    PAYMENT_METHODS,
+    BANK_DETAILS,
+    FONEPAY_DETAILS
 } = require('./config');
 
 const app = express();
@@ -61,7 +65,10 @@ app.get('/api/health', (req, res) => {
 app.get('/api/config', (req, res) => {
     res.json({
         examFees: EXAM_RESERVATION_FEE,
-        timeSlots: TIME_SLOTS
+        timeSlots: TIME_SLOTS,
+        paymentMethods: PAYMENT_METHODS,
+        bankDetails: BANK_DETAILS,
+        fonepayDetails: FONEPAY_DETAILS
     });
 });
 
@@ -85,6 +92,7 @@ app.get('/api/orders/:uuid', (req, res) => {
 // ================================
 app.use('/api/orders', ordersRouter);
 app.use('/api/esewa', esewaRouter);
+app.use('/api/khalti', khaltiRouter);
 
 // ================================
 // PORT
