@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const phone = form.querySelector('#phone')?.value || '';
       const message = form.querySelector('#message')?.value || '';
 
-      const waText = `Hi BookMyTest! My name is ${name}. I'm interested in booking/getting a voucher for: ${exam}. Phone: ${phone}. ${message}`;
-      const waUrl = `https://wa.me/9779816475000?text=${encodeURIComponent(waText)}`;
+      const waText = `Hi BookMyTest! My name is ${name}. I'm interested in booking/getting a Test for: ${exam}. Phone: ${phone}. ${message}`;
+      const waUrl = `https://wa.me/9779857035643?text=${encodeURIComponent(waText)}`;
 
       // Open WhatsApp in a new tab; the form itself still submits to FormSubmit
       window.open(waUrl, '_blank');
@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const examName = el.getAttribute('data-wa-exam');
-      const text = `Hi BookMyTest! I'd like to know more about booking/voucher for ${examName}. Please share the current price and process.`;
-      window.open(`https://wa.me/9779816475000?text=${encodeURIComponent(text)}`, '_blank');
+      const text = `Hi BookMyTest! I'd like to know more about booking/test registration for ${examName}. Please share the current price and process.`;
+      window.open(`https://wa.me/9779857035643?text=${encodeURIComponent(text)}`, '_blank');
     });
   });
 

@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     bankDetails = cfg.bankDetails || {};
     fonepayDetails = cfg.fonepayDetails || {};
 
-    examSelect.innerHTML = '<option value="" disabled selected>Select an exam</option>' +
+    examSelect.innerHTML = '<option value="" disabled selected>Select an test</option>' +
       Object.keys(examFees).map(name => `<option value="${name}">${name} — NPR ${examFees[name].toLocaleString()}</option>`).join('');
 
     slotSelect.innerHTML = '<option value="" disabled selected>Select a time slot</option>' +
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const notes = document.getElementById('notes').value.trim();
 
     if (!exam || !date || !slot) {
-      showError('Please select an exam, date, and time slot before adding to cart.');
+      showError('Please select an test, date, and time slot before adding to cart.');
       return;
     }
 
