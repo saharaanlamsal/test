@@ -151,8 +151,10 @@
 }
 .payment-option-icon svg { width: 100%; height: 100%; }
 .payment-option[data-method="esewa"] .payment-option-label { color: #5FA615; }
-.payment-option[data-method="khalti"] .payment-option-label { color: #5C2D91; }
-.payment-option[data-method="fonepay"] .payment-option-label { color: #C8102E; }
+.payment-option[data-method="khalti"] .payment-option-label { color: #E31E27; }
+.payment-option[data-method="bank"] .payment-option-label { color: #1B4DE4; }
+.payment-option[data-method="fonepay"] .payment-option-label { color: #F5900F; }
+.payment-option[data-method="cod"] .payment-option-label { color: #5C2D91; }
 
 .manual-payment-note {
   background: var(--paper);
@@ -175,12 +177,21 @@
 .esewa-btn {
   width: 100%;
   margin-top: 22px;
-  background: #60BB46;
   color: var(--white);
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  /* Default (no method selected yet) falls back to eSewa green */
+  background: #60BB46;
   box-shadow: 0 10px 24px rgba(96,187,70,0.35);
 }
 .esewa-btn:hover { transform: translateY(-2px); }
 .esewa-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+/* Button colour follows whichever payment method is currently selected */
+.esewa-btn[data-pay-method="esewa"]   { background: #60BB46; box-shadow: 0 10px 24px rgba(96,187,70,0.35); }
+.esewa-btn[data-pay-method="khalti"]  { background: #E31E27; box-shadow: 0 10px 24px rgba(227,30,39,0.35); }
+.esewa-btn[data-pay-method="bank"]    { background: #1B4DE4; box-shadow: 0 10px 24px rgba(27,77,228,0.35); }
+.esewa-btn[data-pay-method="fonepay"] { background: #F5900F; box-shadow: 0 10px 24px rgba(245,144,15,0.35); }
+.esewa-btn[data-pay-method="cod"]     { background: #5C2D91; box-shadow: 0 10px 24px rgba(92,45,145,0.35); }
 
 .form-error {
   display: none;

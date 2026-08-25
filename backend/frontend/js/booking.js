@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     submitBtn.textContent = paymentMethods[selectedPaymentMethod]?.type === 'manual'
       ? `Confirm Booking — Pay via ${label}`
       : `Pay with ${label} & Confirm Booking`;
+    // Drives the per-method button colour in booking.css
+    submitBtn.dataset.payMethod = selectedPaymentMethod;
   }
 
   function renderManualNote() {
