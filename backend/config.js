@@ -32,10 +32,10 @@ const PAYMENT_METHODS = {
 // Shown to the customer after checkout when they pick a manual payment method.
 // Edit these with your real details — freely editable, no code changes needed elsewhere.
 const BANK_DETAILS = {
-  bank_name: process.env.BANK_NAME || 'Nepal Bank Limited',
-  account_name: process.env.BANK_ACCOUNT_NAME || 'BookMyTest / Manigram Connection',
-  account_number: process.env.BANK_ACCOUNT_NUMBER || '0000000000000',
-  branch: process.env.BANK_BRANCH || 'Butwal Branch',
+  bank_name: process.env.BANK_NAME || 'Shine Resunga Development Bank Ltd.',
+  account_name: process.env.BANK_ACCOUNT_NAME || 'Book My Test',
+  account_number: process.env.BANK_ACCOUNT_NUMBER || '03100100763169000001',
+  branch: process.env.BANK_BRANCH || 'Manigram Branch',
 };
 
 const FONEPAY_DETAILS = {
